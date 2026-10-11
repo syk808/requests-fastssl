@@ -6,8 +6,8 @@ SSLContext with certifi's ``cacert.pem``. That is roughly 136k small reads and
 0.5-0.75 s of CPU per connection. Code that calls ``requests.get`` / ``requests.post``
 without a Session opens a new connection on every call, so the cost is paid every time.
 
-What this module does is the "preloaded SSLContext" approach that requests 2.32 shipped
-and 2.33 removed: the default CA bundle is loaded once per process, and every connection
+What this module does is the "preloaded SSLContext" approach that requests 2.32.0 shipped
+and 2.32.5 reverted: the default CA bundle is loaded once per process, and every connection
 that uses ``verify=True`` with the default CA bundle shares that context. Verification
 is unchanged (CERT_REQUIRED + hostname check); only the repeated file loading goes away.
 

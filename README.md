@@ -5,18 +5,19 @@ for the whole process.
 
 ## The problem
 
-With requests 2.33 / urllib3 2.x, every new HTTPS connection builds a fresh
+With requests 2.32.5 and later (measured on 2.33.1) / urllib3 2.x, every new HTTPS connection builds a fresh
 `SSLContext` and calls `load_verify_locations()` on certifi's `cacert.pem`.
 Parsing that bundle is not free. Code that calls `requests.get()` /
 `requests.post()` directly (no `Session`) opens a new connection per call, so it
 pays that cost on every call.
 
 Measured on one Windows machine with requests 2.33.1, urllib3 2.6.3 and
-OpenSSL 3.0.16: about 0.5-0.75 s of CPU per new HTTPS connection. That is a
+OpenSSL 3.0.16: about 0.45-0.75 s of CPU per new HTTPS connection. That is a
 single measurement on a single machine, not a benchmark; the cost on other
 platforms and versions may be much smaller. Measure before assuming you need this.
 
-requests 2.32 shipped a preloaded default context and 2.33 removed it. This
+requests 2.32.0 shipped a preloaded default context and 2.32.5 reverted it (see the
+requests changelog and psf/requests#7040 for the upstream discussion). This
 module does the same thing from the outside: the default CA bundle is loaded once,
 and connections that use `verify=True` with the default bundle share that context.
 Certificate verification is unchanged (`CERT_REQUIRED` plus hostname check).
